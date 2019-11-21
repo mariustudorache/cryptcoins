@@ -2,9 +2,9 @@
   "name": "cryptcoins",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./api/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,27 @@
   "bugs": {
     "url": "https://github.com/mariustudorache/cryptcoins/issues"
   },
-  "homepage": "https://github.com/mariustudorache/cryptcoins#readme"
+  "homepage": "https://github.com/mariustudorache/cryptcoins#readme",
+  "dependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/polyfill": "^7.7.0",
+    "axios": "^0.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "ioredis": "^4.14.1",
+    "mongoose": "^5.7.11",
+    "mongoose-float": "^1.0.4",
+    "node-cron": "^2.0.3",
+    "node-fetch": "^2.6.0",
+    "nodemailer": "^6.3.1",
+    "redis": "^2.8.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "swagger-jsdoc": "^3.4.0",
+    "swagger-ui": "^3.24.3",
+    "swagger-ui-express": "^4.1.2",
+    "winston": "^3.2.1"
+  }
 }
