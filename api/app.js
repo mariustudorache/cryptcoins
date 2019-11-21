@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 var http = require('http').createServer(app);
 const mongoose = require('mongoose');
-const logger = require('./logs/logger');
+const logger = require('../logs/logger');
 require('dotenv/config');
 
 //import swagger
