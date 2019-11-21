@@ -3,6 +3,7 @@ const app = express();
 var http = require('http').createServer(app);
 const mongoose = require('mongoose');
 const logger = require('../logs/logger');
+const cron = require('node-cron');
 require('dotenv/config');
 
 //import swagger
@@ -30,6 +31,18 @@ const swaggerOptions = {
     // ['.routes/*.js']
     apis: ["./routes/cryptos.js"]
 };
+
+
+// recibe los datos de api cada 60 segundos
+cron.schedule("* * * * *", function () {
+    console.log("---------------------");
+    const cryptData = getCurData.getCurrencyData();
+    cryptData.then(function (data) {
+        io.emit('updateData', data);
+    })
+    logger.info('recibo informacion de los precios cada 60 segundos');
+});
+
 
 
 app.use(express.urlencoded({ extended: true }));
