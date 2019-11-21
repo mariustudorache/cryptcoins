@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 var http = require('http').createServer(app);
 const mongoose = require('mongoose');
+const logger = require('../logs/logger');
 require('dotenv/config');
 
 //import swagger
@@ -45,10 +46,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 //connect to DB
 mongoose.connect(process.env.DB_CONN, { useNewUrlParser: true, useUnifiedTopology: true },
     () => {
-        console.log("DB CONNECTED ");
+        logger.info("DB CONNECTED ");
     })
 
 
 http.listen(PORT, function () {
-    console.log(PORT);
+    logger.info("server listen in: " + PORT);
 });
