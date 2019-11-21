@@ -3,6 +3,7 @@ const router = express.Router();
 const CryptCurrency = require('../models/CryptCurrency').CryptCurrency;
 const redis = require('redis')
 const client = redis.createClient(6379);
+const logger = require('../logs/logger');
 
 
 
@@ -17,16 +18,17 @@ async function getCryptoData(req, res, next) {
         date.setHours(date.getHours())
 
         const crypto = await CryptCurrency.find().
-            where('last_updated').ls(dLast.toISOString()).gt(date.toISOString()).
+            //where('last_updated').ls(dLast.toISOString()).gt(date.toISOString()).
             select('id name quote').
             exec()
-        //add data into redis cache for 60 seconds
+
         client.setex("cryptCacheData", 60, JSON.stringify(crypto));
         res.json(crypto);
     } catch (error) {
         res.json(error)
     }
 }
+
 
 // Routes
 /**
@@ -38,24 +40,20 @@ async function getCryptoData(req, res, next) {
  *      '200':
  *        description: Exito!
  */
-router.get('/crypto', getCryptoData)
-
-
-
-
+router.get('/crypto', cache, getCryptoData)
 // Routes
 /**
  * @swagger
- * /crypto/:cryptoId:
- *  get:
+ * /crypto/:cryptoId:    
+ *  get: 
  *    description: Solicitar los datos de un campo
  *    produces:
  *          - application/json
  *    parameters:
  *          - name: id
  *            in: path
- *
- *    responses:
+ *            
+ *    responses: 
  *            '200':
  *             description: Exito!
  */
@@ -69,11 +67,28 @@ router.get('/crypto/:cryptoId', async (req, res) => {
     }
 })
 
+// Cache middleware
+function cache(req, res, next) {
+
+
+    client.get("cryptCacheData", (err, data) => {
+        if (err) throw err;
+
+        if (data !== null) {
+            logger.info('cache data');
+            res.send(data);
+        } else {
+            next();
+        }
+    });
+}
+
+
 
 
 // Routes
 /**
- * @swagger
+ * @swagger 
  * /crypto:
  *  post:
  *    description: Utilizada para actualizar los datos de cryptomeneda
@@ -127,22 +142,21 @@ router.post('/crypto', async (req, res) => {
 })
 
 
-
 // Routes 
 /**
  * @swagger
- * /crypto/:
- *  put:
+ * /crypto/: 
+ *  put: 
  *    description: Actualizar los datos
  *    produces:
  *          - application/json
- *    parameters:
- *          - name: id
- *            in: path
- *
- *    responses:
+ *    parameters: 
+ *          - name: id 
+ *            in: path     
+ *              
+ *    responses: 
  *            '200':
- *             description: Exito!
+ *             description: Exito!    
  */
 router.put('/crypto/:cryptoId', async (req, res) => {
     try {
@@ -153,29 +167,5 @@ router.put('/crypto/:cryptoId', async (req, res) => {
 
     }
 })
-
-
-
-module.exports.dbData = async function (req, res, next) {
-    try {
-        console.log('sunt in getCryptoData')
-        let date = new Date();
-        var d = new Date();
-        d.setHours(d.getHours() + 5);
-        date.setHours(date.getHours() - 3)
-        //console.log(date.toISOString());
-        const crypto = await CryptCurrency.find().
-            //where('last_updated').gt(date.toISOString()).lt(d.toISOString()).
-            select('id name quote').
-            exec()
-
-        client.setex("cryptCacheData", 30, JSON.stringify(crypto));
-        res.json(crypto);
-    } catch (error) {
-        res.json(error)
-    }
-}
-
-
 
 module.exports = router;

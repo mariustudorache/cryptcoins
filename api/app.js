@@ -3,23 +3,22 @@ const app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 const mongoose = require('mongoose');
-const logger = require('../logs/logger');
 const cron = require('node-cron');
-const emailSender = require('../emailsender/sendEmailData');
-require('dotenv/config');
-
+const logger = require('../logs/logger');
 //import swagger
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+
+require('dotenv/config');
 
 //import routes
 const cryproRoute = require('../routes/cryptos');
 const getCurData = require('../routes/getCryptData');
 
-const PORT = process.env.PORT || 3000;
 
 
-//swagger options
+
+
 const swaggerOptions = {
     swaggerDefinition: {
         info: {
@@ -32,8 +31,16 @@ const swaggerOptions = {
         }
     },
     // ['.routes/*.js']
-    apis: ["./routes/cryptos.js"]
+    apis: ["../routes/cryptos.js"]
 };
+
+
+
+
+app.get('/', function (req, res) {
+    res.sendFile(process.cwd() + '/view/');
+    //console.log(process.cwd() + '/view/');
+});
 
 
 io.on('connection', function (socket) {
@@ -41,45 +48,41 @@ io.on('connection', function (socket) {
     logger.info('usuario conectado');
 });
 
+const PORT = process.env.PORT || 3000;
 
-// recibe los datos de api cada 60 segundos
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use('/', cryproRoute);
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// envia los datos cada 60 segundos
 cron.schedule("* * * * *", function () {
     console.log("---------------------");
     const cryptData = getCurData.getCurrencyData();
     cryptData.then(function (data) {
         io.emit('updateData', data);
     })
+
+    // io.emit('updateData', data);
     logger.info('recibo informacion de los precios cada 60 segundos');
 });
 
 
 // envia email cada hora
 cron.schedule("* 1 * * *", function () {
-    //emailSender
-    logger.info('email enviado');
+    console.log("---------------------");
+    logger.info('envio email cada hora');
 });
-
-
-
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-app.use('/', cryproRoute);
-
-//doc api route
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-
 
 //connect to DB
 mongoose.connect(process.env.DB_CONN, { useNewUrlParser: true, useUnifiedTopology: true },
     () => {
-        logger.info("DB CONNECTED ");
+        logger.info('db connectada');
     })
 
 
 http.listen(PORT, function () {
-    logger.info("server listen in: " + PORT);
+    logger.info('escucha en el puerto: ' + PORT)
 });
