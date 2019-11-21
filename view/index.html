@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Crypto</title>
+    <style>
+        #title {
+            text-align: center;
+            font-family: arial, sans-serif;
+        }
+
+        #cryptos {
+            text-align: center;
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            border: 3px solid #ddd;
+            width: 100%;
+        }
+
+        #cryptos td,
+        #cryptos th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #cryptos tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #cryptos tr:hover {
+            background-color: #ddd;
+        }
+
+        #cryptos th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: center;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- We will put our React component inside this div. -->
+    <div id="h1"></div>
+    <div id="h2"></div>
+
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+    <!-- Load our React component. -->
+    <div id="root"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+    <script type="text/babel">
+
+
+
+        class Header extends React.Component {
+
+
+
+            state = {
+                cryptos: []
+            }
+
+            componentDidMount() {
+
+                axios.get(`/crypto`)
+                    .then(res => {
+                        const cryptos = res.data;
+                        this.setState({ cryptos });
+
+                    })
+
+                var socket = io.connect();
+                socket.on("updateData", data => this.setState({ persons: data }));
+
+
+            }
+
+            renderTableData() {
+                return this.state.cryptos.map((crypto, index) => {
+                    const { id, name, quote } = crypto;
+
+                    const price = quote.EUR.price;
+                    const last_updated = quote.EUR.last_updated;
+                    return (
+                        <tr key={index}>
+                            <td>{id}</td>
+                            <td>{name}</td>
+                            <td>{price}</td>
+                            <td>{last_updated}</td>
+                        </tr>
+                    )
+                })
+            }
+
+            renderTableHeader() {
+                let header = ["id", "nombre", "precio", "hora_ultima_actualizacion"]
+                return header.map((key, index) => {
+
+                    return <th key={index}>{key}</th>
+                })
+            }
+
+            render() {
+                return (
+                    <div>
+                        <h1 id='title'>PRECIOS CRIPTOMONEDAS</h1>
+                        <table id='cryptos'>
+                            <tbody>
+                                <tr>{this.renderTableHeader()}</tr>
+                                {this.renderTableData()}
+                            </tbody>
+                        </table>
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(<Header />, document.getElementById('h1'));
+
+    </script>
+
+</html>
