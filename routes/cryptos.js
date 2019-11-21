@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const CryptCurrency = require('../models/CryptCurrency').CryptCurrency;
+const redis = require('redis')
+const client = redis.createClient(6379);
 
 
 
@@ -18,7 +20,8 @@ async function getCryptoData(req, res, next) {
             where('last_updated').ls(dLast.toISOString()).gt(date.toISOString()).
             select('id name quote').
             exec()
-
+        //add data into redis cache for 60 seconds
+        client.setex("cryptCacheData", 60, JSON.stringify(crypto));
         res.json(crypto);
     } catch (error) {
         res.json(error)
