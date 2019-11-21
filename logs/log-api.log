@@ -1,2 +1,12 @@
 [2019-11-21T14:04:29.503Z] info server listen in: 3000
 [2019-11-21T14:04:30.404Z] info DB CONNECTED 
+[2019-11-21T14:32:59.287Z] info server listen in: 3000
+[2019-11-21T14:33:00.301Z] info DB CONNECTED 
+[2019-11-21T14:35:14.410Z] info server listen in: 3000
+[2019-11-21T14:35:15.207Z] info DB CONNECTED 
+[2019-11-21T14:36:00.028Z] info recibo informacion de los precios cada 60 segundos
+[2019-11-21T14:36:00.456Z] info precios insertados en db
+[2019-11-21T14:36:00.822Z] info precios insertados en db
+[2019-11-21T14:36:00.828Z] info precios insertados en db
+[2019-11-21T14:36:01.189Z] info precios insertados en db
+[2019-11-21T14:36:01.193Z] info precios insertados en db

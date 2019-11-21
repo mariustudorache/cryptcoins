@@ -4,6 +4,7 @@ var http = require('http').createServer(app);
 const mongoose = require('mongoose');
 const logger = require('../logs/logger');
 const cron = require('node-cron');
+const emailSender = require('../emailsender/sendEmailData');
 require('dotenv/config');
 
 //import swagger
@@ -12,6 +13,7 @@ const swaggerUi = require("swagger-ui-express");
 
 //import routes
 const cryproRoute = require('../routes/cryptos');
+const getCurData = require('../routes/getCryptData');
 
 const PORT = process.env.PORT || 3000;
 
@@ -42,6 +44,14 @@ cron.schedule("* * * * *", function () {
     })
     logger.info('recibo informacion de los precios cada 60 segundos');
 });
+
+
+// envia email cada hora
+cron.schedule("* 1 * * *", function () {
+    //emailSender
+    logger.info('email enviado');
+});
+
 
 
 
