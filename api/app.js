@@ -36,6 +36,11 @@ app.use(express.json());
 
 app.use('/', cryproRoute);
 
+//doc api route
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+
 
 //connect to DB
 mongoose.connect(process.env.DB_CONN, { useNewUrlParser: true, useUnifiedTopology: true },
