@@ -84,6 +84,9 @@
 
                     })
 
+                var socket = io.connect();
+                socket.on("updateData", data => this.setState({ persons: data }));
+
 
             }
 

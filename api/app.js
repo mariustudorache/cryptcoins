@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 const mongoose = require('mongoose');
 const logger = require('../logs/logger');
 const cron = require('node-cron');
@@ -33,6 +34,12 @@ const swaggerOptions = {
     // ['.routes/*.js']
     apis: ["./routes/cryptos.js"]
 };
+
+
+io.on('connection', function (socket) {
+
+    logger.info('usuario conectado');
+});
 
 
 // recibe los datos de api cada 60 segundos
